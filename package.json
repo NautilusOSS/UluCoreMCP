@@ -1,0 +1,14 @@
+{
+  "name": "ulu-core-mcp",
+  "version": "1.0.0",
+  "description": "Low-level blockchain interface MCP server for Algorand and Voi networks",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "algosdk": "^3.5.2"
+  }
+}
