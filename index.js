@@ -17,6 +17,9 @@ import {
   simulateTransactions,
   compileTeal,
   disassembleTeal,
+  paymentTxn,
+  assetTransferTxn,
+  assetOptinTxn,
 } from "./lib/algod.js";
 import {
   getTransaction,
@@ -209,6 +212,46 @@ server.tool(
     bytecode: z.string().describe("Base64-encoded TEAL bytecode"),
   },
   wrapHandler(disassembleTeal),
+);
+
+// --- Transaction Builders ---
+
+server.tool(
+  "payment_txn",
+  "Build an unsigned payment transaction for native ALGO/VOI transfers. Returns base64-encoded transaction bytes for signing.",
+  {
+    network: z.string().describe("Network identifier (e.g. algorand-mainnet, voi-mainnet)"),
+    sender: z.string().describe("Sender wallet address"),
+    receiver: z.string().describe("Receiver wallet address"),
+    amount: z.string().describe("Amount in human-readable units (e.g. \"1.5\" for 1.5 ALGO/VOI)"),
+    note: z.string().optional().describe("Arbitrary note (UTF-8 encoded to bytes)"),
+  },
+  wrapHandler(paymentTxn),
+);
+
+server.tool(
+  "asset_transfer_txn",
+  "Build an unsigned ASA transfer transaction. Amount is in base units (smallest denomination). Returns base64-encoded transaction bytes for signing.",
+  {
+    network: z.string().describe("Network identifier"),
+    sender: z.string().describe("Sender wallet address"),
+    receiver: z.string().describe("Receiver wallet address"),
+    assetId: z.number().int().describe("ASA ID to transfer"),
+    amount: z.string().describe("Amount in base (smallest) units as a string"),
+    note: z.string().optional().describe("Arbitrary note (UTF-8 encoded to bytes)"),
+  },
+  wrapHandler(assetTransferTxn),
+);
+
+server.tool(
+  "asset_optin_txn",
+  "Build an unsigned ASA opt-in transaction (0-amount transfer to self). Returns base64-encoded transaction bytes for signing.",
+  {
+    network: z.string().describe("Network identifier"),
+    sender: z.string().describe("Account address opting in (sends to self)"),
+    assetId: z.number().int().describe("ASA ID to opt in to"),
+  },
+  wrapHandler(assetOptinTxn),
 );
 
 // Start server
